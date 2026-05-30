@@ -1,0 +1,57 @@
+<?xml version="1.0" ?>
+<mxGraphModel>
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+    <mxCell id="PSU-A" value="PSU-A
+電源装置A" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1" tooltip="type: PowerSupply&amp;#xa;system: A&amp;#xa;voltages: ['12V', '24V']&amp;#xa;capacity: 500W">
+      <mxGeometry x="40" y="40" width="120" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="PSU-B" value="PSU-B
+電源装置B" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1" tooltip="type: PowerSupply&amp;#xa;system: B&amp;#xa;voltages: ['12V', '24V']&amp;#xa;capacity: 500W">
+      <mxGeometry x="40" y="140" width="120" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="SW-A" value="SW-A
+スイッチA" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1" tooltip="type: Switch&amp;#xa;system: A&amp;#xa;voltages: ['12V']&amp;#xa;consumption: 5W">
+      <mxGeometry x="240" y="40" width="120" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="SW-B" value="SW-B
+スイッチB" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1" tooltip="type: Switch&amp;#xa;system: B&amp;#xa;voltages: ['12V']&amp;#xa;consumption: 5W">
+      <mxGeometry x="240" y="140" width="120" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="LIGHT-A" value="LIGHT-A
+ライトA" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1" tooltip="type: Light&amp;#xa;system: A&amp;#xa;voltages: ['24V']&amp;#xa;consumption: 30W">
+      <mxGeometry x="240" y="240" width="120" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="LIGHT-B" value="LIGHT-B
+ライトB" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1" tooltip="type: Light&amp;#xa;system: B&amp;#xa;voltages: ['24V']&amp;#xa;consumption: 30W">
+      <mxGeometry x="240" y="340" width="120" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="HVAC-A" value="HVAC-A
+空調A" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1" tooltip="type: HVAC&amp;#xa;system: A&amp;#xa;voltages: ['24V']&amp;#xa;consumption: 150W">
+      <mxGeometry x="240" y="440" width="120" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="HVAC-B" value="HVAC-B
+空調B" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1" tooltip="type: HVAC&amp;#xa;system: B&amp;#xa;voltages: ['24V']&amp;#xa;consumption: 150W">
+      <mxGeometry x="240" y="540" width="120" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="edge-0" value="12V" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#4A90D9;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="PSU-A" target="SW-A" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="edge-1" value="24V" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#E05C2A;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="PSU-A" target="LIGHT-A" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="edge-2" value="24V" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#E05C2A;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="PSU-A" target="HVAC-A" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="edge-3" value="12V" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#4A90D9;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="PSU-B" target="SW-B" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="edge-4" value="24V" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#E05C2A;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="PSU-B" target="LIGHT-B" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="edge-5" value="24V" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#E05C2A;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="PSU-B" target="HVAC-B" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+  </root>
+</mxGraphModel>
