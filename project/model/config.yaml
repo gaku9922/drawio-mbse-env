@@ -1,0 +1,46 @@
+# ──────────────────────────────────────────────────
+# 矢印の色分け設定
+# edge_color_key: relations の attributes 内の
+#                 どのキーを色分けに使うかを指定する
+# 例）電気系 → voltage / 情報系 → bandwidth
+# ──────────────────────────────────────────────────
+edge_color_key: voltage
+
+edge_colors:
+  12V: "#4A90D9"   # 青：低圧系
+  24V: "#E05C2A"   # 橙：高圧系
+  default: "#999999"  # 上記に該当しない値はグレー
+
+# ──────────────────────────────────────────────────
+# ノードスタイル
+# type_styles: objects の type キーに対応
+# type キーが存在しない、または一致しない場合は
+# default スタイルが適用される
+# ──────────────────────────────────────────────────
+type_styles:
+  PowerSupply:
+    fill_color: "#DAE8FC"
+    stroke_color: "#6C8EBF"
+  Switch:
+    fill_color: "#D5E8D4"
+    stroke_color: "#82B366"
+  Light:
+    fill_color: "#FFF2CC"
+    stroke_color: "#D6B656"
+  HVAC:
+    fill_color: "#F8CECC"
+    stroke_color: "#B85450"
+  default:
+    fill_color: "#F5F5F5"
+    stroke_color: "#666666"
+
+# ──────────────────────────────────────────────────
+# レイアウト設定
+# ──────────────────────────────────────────────────
+layout:
+  direction: LR    # LR: 左→右 / TB: 上→下
+  node_width: 120
+  node_height: 60
+  spacing_x: 80
+  spacing_y: 40
+  margin: 40

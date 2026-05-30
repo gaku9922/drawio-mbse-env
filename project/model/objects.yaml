@@ -1,0 +1,76 @@
+objects:
+  # ──────────────────────────────
+  # 電源装置（Power Supply Units）
+  # ──────────────────────────────
+  - id: PSU-A
+    name: 電源装置A
+    # 以下は任意項目（ユーザーが自由に定義）
+    type: PowerSupply
+    system: A
+    voltages: [12V, 24V]
+    capacity: 500W
+
+  - id: PSU-B
+    name: 電源装置B
+    # 以下は任意項目（ユーザーが自由に定義）
+    type: PowerSupply
+    system: B
+    voltages: [12V, 24V]
+    capacity: 500W
+
+  # ──────────────────────────────
+  # スイッチ（Switches）
+  # ──────────────────────────────
+  - id: SW-A
+    name: スイッチA
+    # 以下は任意項目（ユーザーが自由に定義）
+    type: Switch
+    system: A
+    voltages: [12V]
+    consumption: 5W
+
+  - id: SW-B
+    name: スイッチB
+    # 以下は任意項目（ユーザーが自由に定義）
+    type: Switch
+    system: B
+    voltages: [12V]
+    consumption: 5W
+
+  # ──────────────────────────────
+  # ライト（Lights）
+  # ──────────────────────────────
+  - id: LIGHT-A
+    name: ライトA
+    # 以下は任意項目（ユーザーが自由に定義）
+    type: Light
+    system: A
+    voltages: [24V]
+    consumption: 30W
+
+  - id: LIGHT-B
+    name: ライトB
+    # 以下は任意項目（ユーザーが自由に定義）
+    type: Light
+    system: B
+    voltages: [24V]
+    consumption: 30W
+
+  # ──────────────────────────────
+  # 空調（HVAC）
+  # ──────────────────────────────
+  - id: HVAC-A
+    name: 空調A
+    # 以下は任意項目（ユーザーが自由に定義）
+    type: HVAC
+    system: A
+    voltages: [24V]
+    consumption: 150W
+
+  - id: HVAC-B
+    name: 空調B
+    # 以下は任意項目（ユーザーが自由に定義）
+    type: HVAC
+    system: B
+    voltages: [24V]
+    consumption: 150W

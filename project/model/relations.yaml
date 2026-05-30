@@ -1,0 +1,45 @@
+relations:
+  # ──────────────────────────────
+  # 系統A：PSU-A からの接続
+  # ──────────────────────────────
+  - from: PSU-A
+    to: SW-A
+    attributes:
+      voltage: 12V
+
+  - from: PSU-A
+    to: LIGHT-A
+    attributes:
+      voltage: 24V
+
+  - from: PSU-A
+    to: HVAC-A
+    attributes:
+      voltage: 24V
+
+  # ──────────────────────────────
+  # 系統B：PSU-B からの接続
+  # ──────────────────────────────
+  - from: PSU-B
+    to: SW-B
+    attributes:
+      voltage: 12V
+
+  - from: PSU-B
+    to: LIGHT-B
+    attributes:
+      voltage: 24V
+
+  - from: PSU-B
+    to: HVAC-B
+    attributes:
+      voltage: 24V
+
+  # ──────────────────────────────
+  # 意図的なエラー例（検証確認用）
+  # 実運用時はこのセクションを削除する
+  # ──────────────────────────────
+  # - from: PSU-A
+  #   to: TBD-001     # ERROR: 未定義ID
+  #   attributes:
+  #     voltage: 12V
