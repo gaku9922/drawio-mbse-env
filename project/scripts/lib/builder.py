@@ -2,11 +2,12 @@
 builder.py
 objects / relations から draw.io XML を生成するモジュール。
 
-レイアウト方針：
-  - 接続元（from）に登場するオブジェクトを左列に配置
-  - 接続先（to）のみのオブジェクトを右列に配置
-  - いずれにも登場しないオブジェクトは右列の末尾に配置
-  - direction: TB の場合は上段／下段に読み替える
+レイアウト方針（最長路ランク）：
+  - ソース（to に一度も出ない）: 最左列 rank=0
+  - シンク（from に一度も出ない）・未接続: 最右列 rank=R_max
+  - 中間（from かつ to）: 最長路で 0 < rank < R_max
+  - すべての辺で rank(from) < rank(to)（LR: 右向き / TB: 下向き）
+  - direction: TB のとき rank を段（y）に割り当てる
 """
 
 import xml.etree.ElementTree as ET
@@ -60,11 +61,181 @@ def _edge_label(relation: dict, config: dict) -> str:
     return ""
 
 
+def _edge_connector_style(color: str, direction: str) -> str:
+    """方向に応じた矢印の接続点スタイルを返す。"""
+    if direction == "TB":
+        connector = "exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+    else:
+        connector = "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;"
+    return (
+        f"edgeStyle=orthogonalEdgeStyle;rounded=0;"
+        f"strokeColor={color};strokeWidth=2;"
+        f"{connector}"
+    )
+
+
 def _tooltip(obj: dict) -> str:
     """id / name 以外の属性をツールチップ文字列にまとめる。"""
     skip = {"id", "name"}
     lines = [f"{k}: {v}" for k, v in obj.items() if k not in skip]
     return "&#xa;".join(lines)   # draw.io の改行エスケープ
+
+
+def _role_sets(object_ids: set[str], from_ids: set[str], to_ids: set[str]) -> tuple[set[str], set[str], set[str]]:
+    """ソース / シンク / 未接続の ID 集合を返す。"""
+    related = from_ids | to_ids
+    sources = {oid for oid in object_ids if oid in from_ids and oid not in to_ids}
+    sinks   = {oid for oid in object_ids if oid in to_ids and oid not in from_ids}
+    isolated = object_ids - related
+    return sources, sinks, isolated
+
+
+def _longest_path_ranks(
+    node_ids: set[str],
+    relations: list,
+    sources: set[str],
+) -> dict[str, int]:
+    """
+    有向辺 u→v について rank(v) >= rank(u)+1 となるよう最長路ランクを付与する。
+    ソースは 0 に固定する。
+    """
+    rank = {oid: 0 for oid in node_ids}
+
+    if not relations:
+        return rank
+
+    limit = len(node_ids) + 1
+    for _ in range(limit):
+        changed = False
+        for rel in relations:
+            u, v = rel["from"], rel["to"]
+            if u not in node_ids or v not in node_ids:
+                continue
+            new_rank = rank[u] + 1
+            if new_rank > rank[v]:
+                rank[v] = new_rank
+                changed = True
+        if not changed:
+            break
+
+    for oid in sources:
+        rank[oid] = 0
+
+    return rank
+
+
+def _pin_sinks_and_isolated(rank: dict[str, int], sinks: set[str], isolated: set[str]) -> None:
+    """シンクと未接続ノードを最右列（R_max）に揃える。"""
+    if not rank:
+        return
+    r_max = max(rank.values())
+    for oid in sinks | isolated:
+        rank[oid] = r_max
+
+
+def _union_find_components(node_ids: set[str], relations: list) -> list[set[str]]:
+    """無向グラフとしての連結成分を返す（リレーションに登場するノードのみ）。"""
+    parent = {oid: oid for oid in node_ids}
+
+    def find(x: str) -> str:
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    def union(a: str, b: str) -> None:
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            parent[rb] = ra
+
+    for rel in relations:
+        union(rel["from"], rel["to"])
+
+    groups: dict[str, set[str]] = {}
+    for oid in node_ids:
+        root = find(oid)
+        groups.setdefault(root, set()).add(oid)
+
+    return list(groups.values())
+
+
+def _compute_global_ranks(
+    object_ids: set[str],
+    relations: list,
+    sources: set[str],
+    sinks: set[str],
+    isolated: set[str],
+) -> dict[str, int]:
+    """全グラフを通したランクを返す。"""
+    related = {r["from"] for r in relations} | {r["to"] for r in relations}
+    rank = _longest_path_ranks(related, relations, sources & related)
+
+    for oid in object_ids:
+        rank.setdefault(oid, 0)
+
+    _pin_sinks_and_isolated(rank, sinks, isolated)
+    return rank
+
+
+def _compute_per_component_ranks(
+    object_ids: set[str],
+    relations: list,
+    sources: set[str],
+    sinks: set[str],
+    isolated: set[str],
+) -> dict[str, int]:
+    """連結成分ごとにランクを付け、列オフセットで横に並べる。"""
+    related = {r["from"] for r in relations} | {r["to"] for r in relations}
+    global_rank: dict[str, int] = {oid: 0 for oid in object_ids}
+
+    components = _union_find_components(related, relations)
+    components.sort(key=lambda c: min(c))
+
+    offset = 0
+    for comp in components:
+        comp_sources = sources & comp
+        comp_sinks = sinks & comp
+        comp_relations = [
+            r for r in relations
+            if r["from"] in comp and r["to"] in comp
+        ]
+        local = _longest_path_ranks(comp, comp_relations, comp_sources)
+        _pin_sinks_and_isolated(local, comp_sinks, set())
+
+        for oid, local_rank in local.items():
+            global_rank[oid] = offset + local_rank
+
+        offset += max(local.values(), default=0) + 1
+
+    if isolated:
+        iso_rank = offset if offset > 0 else 0
+        for oid in isolated:
+            global_rank[oid] = iso_rank
+
+    return global_rank
+
+
+def _compute_node_ranks(
+    objects: list,
+    relations: list,
+    config: dict,
+) -> dict[str, int]:
+    """各オブジェクト ID の列ランクを返す。"""
+    layout = config.get("layout", {})
+    component_mode = layout.get("component_mode", "global")
+
+    object_ids = {o["id"] for o in objects}
+    from_ids = {r["from"] for r in relations}
+    to_ids = {r["to"] for r in relations}
+    sources, sinks, isolated = _role_sets(object_ids, from_ids, to_ids)
+
+    if component_mode == "per_component":
+        return _compute_per_component_ranks(
+            object_ids, relations, sources, sinks, isolated
+        )
+    return _compute_global_ranks(
+        object_ids, relations, sources, sinks, isolated
+    )
 
 
 def _compute_layout(objects: list, relations: list, config: dict) -> dict:
@@ -80,36 +251,27 @@ def _compute_layout(objects: list, relations: list, config: dict) -> dict:
     sy        = layout.get("spacing_y",    40)
     margin    = layout.get("margin",       40)
 
-    # from 側 / to 側 を分類
-    from_ids = {r["from"] for r in relations}
-    to_ids   = {r["to"]   for r in relations}
+    ranks = _compute_node_ranks(objects, relations, config)
 
-    left_col  = [o for o in objects if o["id"] in from_ids]
-    right_col = [o for o in objects if o["id"] not in from_ids]
+    # rank ごとに objects.yaml の順で縦（または横）に並べる
+    columns: dict[int, list] = {}
+    for obj in objects:
+        obj_id = obj["id"]
+        col = ranks.get(obj_id, 0)
+        columns.setdefault(col, []).append(obj)
 
     coords = {}
+    col_step = nw + sx
+    row_step = nh + sy
 
-    if direction == "LR":
-        # 左列：from 側
-        for i, obj in enumerate(left_col):
-            x = margin
-            y = margin + i * (nh + sy)
-            coords[obj["id"]] = (x, y)
-        # 右列：その他
-        for i, obj in enumerate(right_col):
-            x = margin + nw + sx
-            y = margin + i * (nh + sy)
-            coords[obj["id"]] = (x, y)
-    else:  # TB
-        # 上段：from 側
-        for i, obj in enumerate(left_col):
-            x = margin + i * (nw + sx)
-            y = margin
-            coords[obj["id"]] = (x, y)
-        # 下段：その他
-        for i, obj in enumerate(right_col):
-            x = margin + i * (nw + sx)
-            y = margin + nh + sy
+    for col, col_objects in sorted(columns.items()):
+        for row, obj in enumerate(col_objects):
+            if direction == "LR":
+                x = margin + col * col_step
+                y = margin + row * row_step
+            else:  # TB
+                x = margin + row * col_step
+                y = margin + col * row_step
             coords[obj["id"]] = (x, y)
 
     return coords
@@ -128,6 +290,7 @@ def build_drawio_xml(
     layout = config.get("layout", {})
     nw = layout.get("node_width",  120)
     nh = layout.get("node_height",  60)
+    direction = layout.get("direction", "LR")
 
     coords = _compute_layout(objects, valid_relations, config)
 
@@ -165,12 +328,7 @@ def build_drawio_xml(
     for idx, rel in enumerate(valid_relations):
         color = _get_edge_color(rel, config)
         label = _edge_label(rel, config)
-        style = (
-            f"edgeStyle=orthogonalEdgeStyle;rounded=0;"
-            f"strokeColor={color};strokeWidth=2;"
-            f"exitX=1;exitY=0.5;exitDx=0;exitDy=0;"
-            f"entryX=0;entryY=0.5;entryDx=0;entryDy=0;"
-        )
+        style = _edge_connector_style(color, direction)
         edge_id = f"edge-{idx}"
         cell = ET.SubElement(
             diagram, "mxCell",

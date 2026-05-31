@@ -1,45 +1,67 @@
 relations:
-  # ──────────────────────────────
-  # 系統A：PSU-A からの接続
-  # ──────────────────────────────
+  # ══════════════════════════════════════════════
+  # 系統A（複雑）: 期待ランク
+  #   列0: PSU-A（ソース）
+  #   列1: SW-A（中継・from/to 両方）
+  #   列2: LIGHT-A, HVAC-A（シンク）+ 直結 PSU→LIGHT
+  # ══════════════════════════════════════════════
+
+  # 鎖の第1段：電源 → スイッチ
   - from: PSU-A
     to: SW-A
     attributes:
       voltage: 12V
 
+  # 鎖の第2段：スイッチから分岐（中継ノードからの fork）
+  - from: SW-A
+    to: LIGHT-A
+    attributes:
+      voltage: 24V
+
+  - from: SW-A
+    to: HVAC-A
+    attributes:
+      voltage: 24V
+
+  # ショートカット：電源から負荷へ直結（2列をまたぐ矢印）
   - from: PSU-A
     to: LIGHT-A
     attributes:
       voltage: 24V
 
-  - from: PSU-A
-    to: HVAC-A
-    attributes:
-      voltage: 24V
+  # ══════════════════════════════════════════════
+  # 系統B（やや単純）: 期待ランク
+  #   列0: PSU-B
+  #   列1: SW-B（中継）
+  #   列2: LIGHT-B, HVAC-B（シンク）
+  # ══════════════════════════════════════════════
 
-  # ──────────────────────────────
-  # 系統B：PSU-B からの接続
-  # ──────────────────────────────
   - from: PSU-B
     to: SW-B
     attributes:
       voltage: 12V
 
-  - from: PSU-B
+  - from: SW-B
     to: LIGHT-B
     attributes:
       voltage: 24V
 
+  # SW を経由しない並列（PSU から直接）
   - from: PSU-B
     to: HVAC-B
     attributes:
       voltage: 24V
 
-  # ──────────────────────────────
-  # 意図的なエラー例（検証確認用）
-  # 実運用時はこのセクションを削除する
-  # ──────────────────────────────
+  # ══════════════════════════════════════════════
+  # 検証用エラー例（試すときはコメントを外す）
+  # ══════════════════════════════════════════════
   # - from: PSU-A
-  #   to: TBD-001     # ERROR: 未定義ID
+  #   to: TBD-001
+  #   attributes:
+  #     voltage: 12V
+  #
+  # 閉路例（ERROR になる）
+  # - from: SW-A
+  #   to: PSU-A
   #   attributes:
   #     voltage: 12V

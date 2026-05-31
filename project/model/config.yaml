@@ -30,17 +30,32 @@ type_styles:
   HVAC:
     fill_color: "#F8CECC"
     stroke_color: "#B85450"
+  Panel:
+    fill_color: "#E1D5E7"
+    stroke_color: "#9673A6"
   default:
     fill_color: "#F5F5F5"
     stroke_color: "#666666"
 
 # ──────────────────────────────────────────────────
-# レイアウト設定
+# レイアウト設定（最長路ランク）
+#
+# 列（rank）の決め方:
+#   - ソース（to に一度も出ない）     → 最左列 rank=0
+#   - シンク（from に一度も出ない）   → 最右列 rank=R_max
+#   - 未接続（リレーションに未登場）  → シンクと同じ最右列
+#   - 中間（from かつ to）            → 最長路で 0 < rank < R_max
+#   すべての辺で rank(from) < rank(to) となるよう配置する
+#
+# component_mode:
+#   global        … 全体で 1 つの R_max（全シンクが同じ最右列）
+#   per_component … 連結成分ごとに列ブロックを横に並べる
 # ──────────────────────────────────────────────────
 layout:
-  direction: LR    # LR: 左→右 / TB: 上→下
+  direction: LR           # LR: 左→右 / TB: 上→下
+  component_mode: global  # global | per_component
   node_width: 120
   node_height: 60
   spacing_x: 80
-  spacing_y: 40
+  spacing_y: 50         # 最右列にノードが並ぶためやや広め
   margin: 40

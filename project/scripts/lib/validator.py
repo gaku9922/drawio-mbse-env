@@ -4,9 +4,11 @@ objects / relations の整合性を検証するモジュール。
 
 検証内容：
   [ERROR] from / to に指定されたIDが objects.yaml に存在しない
+  [ERROR] リレーションに閉路（サイクル）がある
   [WARN]  attributes に edge_color_key に対応する値がない
 """
 
+from collections import defaultdict
 from dataclasses import dataclass, field
 
 
@@ -37,6 +39,64 @@ class ValidationResult:
         lines.append("-" * 40)
         lines.append(f"エラー: {len(self.errors)}件 / 警告: {len(self.warnings)}件")
         return "\n".join(lines)
+
+
+def _find_cycle_nodes(relations: list) -> list[str] | None:
+    """閉路があればサイクル上のノード ID リストを返す。なければ None。"""
+    adj: dict[str, list[str]] = defaultdict(list)
+    nodes: set[str] = set()
+    for r in relations:
+        u, v = r["from"], r["to"]
+        adj[u].append(v)
+        nodes.add(u)
+        nodes.add(v)
+
+    visited: set[str] = set()
+    stack: set[str] = set()
+    parent: dict[str, str | None] = {}
+
+    def dfs(u: str) -> list[str] | None:
+        visited.add(u)
+        stack.add(u)
+        for v in adj[u]:
+            if v not in visited:
+                parent[v] = u
+                found = dfs(v)
+                if found:
+                    return found
+            elif v in stack:
+                cycle_end = v
+                path = [v]
+                cur = u
+                while cur != cycle_end:
+                    path.append(cur)
+                    cur = parent.get(cur, cycle_end)
+                    if cur in path:
+                        break
+                path.append(cycle_end)
+                return list(reversed(path))
+        stack.remove(u)
+        return None
+
+    for node in sorted(nodes):
+        if node not in visited:
+            parent[node] = None
+            found = dfs(node)
+            if found:
+                return found
+
+    return None
+
+
+def _validate_cycles(relations: list, result: ValidationResult) -> None:
+    """閉路検出。検出時は ERROR を追加する。"""
+    cycle = _find_cycle_nodes(relations)
+    if cycle:
+        path = " → ".join(cycle)
+        result.errors.append(
+            f"[ERROR] 閉路が検出されました: {path} "
+            f"（レイアウトの rank 付けができません）"
+        )
 
 
 def validate(
@@ -91,5 +151,8 @@ def validate(
             )
 
         valid_relations.append(r)
+
+    # ④ 閉路検出（有効なリレーションのみ対象）
+    _validate_cycles(valid_relations, result)
 
     return result, valid_relations
