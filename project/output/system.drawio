@@ -3,42 +3,51 @@
   <root>
     <mxCell id="0"/>
     <mxCell id="1" parent="0"/>
-    <mxCell id="PSU-A" value="PSU-A
-電源装置A" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1" tooltip="type: PowerSupply&amp;#xa;system: A&amp;#xa;voltages: ['12V', '24V']&amp;#xa;capacity: 500W">
-      <mxGeometry x="40" y="40" width="120" height="60" as="geometry"/>
-    </mxCell>
-    <mxCell id="SW-A" value="SW-A
-スイッチA" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1" tooltip="type: Switch&amp;#xa;system: A&amp;#xa;voltages: ['12V']&amp;#xa;consumption: 5W">
-      <mxGeometry x="240" y="40" width="120" height="60" as="geometry"/>
-    </mxCell>
-    <mxCell id="LIGHT-A" value="LIGHT-A
-ライトA" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1" tooltip="type: Light&amp;#xa;system: A&amp;#xa;voltages: ['24V']&amp;#xa;consumption: 30W">
-      <mxGeometry x="440" y="40" width="120" height="60" as="geometry"/>
-    </mxCell>
-    <mxCell id="HVAC-A" value="HVAC-A
-空調A" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1" tooltip="type: HVAC&amp;#xa;system: A&amp;#xa;voltages: ['24V']&amp;#xa;consumption: 150W">
-      <mxGeometry x="440" y="150" width="120" height="60" as="geometry"/>
-    </mxCell>
-    <mxCell id="PSU-B" value="PSU-B
-電源装置B" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1" tooltip="type: PowerSupply&amp;#xa;system: B&amp;#xa;voltages: ['12V', '24V']&amp;#xa;capacity: 500W">
-      <mxGeometry x="40" y="150" width="120" height="60" as="geometry"/>
-    </mxCell>
-    <mxCell id="SW-B" value="SW-B
-スイッチB" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1" tooltip="type: Switch&amp;#xa;system: B&amp;#xa;voltages: ['12V']&amp;#xa;consumption: 5W">
-      <mxGeometry x="240" y="150" width="120" height="60" as="geometry"/>
-    </mxCell>
-    <mxCell id="LIGHT-B" value="LIGHT-B
-ライトB" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1" tooltip="type: Light&amp;#xa;system: B&amp;#xa;voltages: ['24V']&amp;#xa;consumption: 30W">
-      <mxGeometry x="440" y="260" width="120" height="60" as="geometry"/>
-    </mxCell>
-    <mxCell id="HVAC-B" value="HVAC-B
-空調B" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1" tooltip="type: HVAC&amp;#xa;system: B&amp;#xa;voltages: ['24V']&amp;#xa;consumption: 150W">
-      <mxGeometry x="440" y="370" width="120" height="60" as="geometry"/>
-    </mxCell>
-    <mxCell id="SPARE-PANEL" value="SPARE-PANEL
-予備盤" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1" tooltip="type: Panel&amp;#xa;system: spare&amp;#xa;note: relations に未登場">
-      <mxGeometry x="440" y="480" width="120" height="60" as="geometry"/>
-    </mxCell>
+    <object id="PSU-A" label="電源装置A" name="電源装置A" type="PowerSupply" system="A" voltages="[&quot;12V&quot;, &quot;24V&quot;]" capacity="500W">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+        <mxGeometry x="40" y="40" width="120" height="60" as="geometry"/>
+      </mxCell>
+    </object>
+    <object id="SW-A" label="スイッチA" name="スイッチA" type="Switch" system="A" voltages="[&quot;12V&quot;]" consumption="5W">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+        <mxGeometry x="240" y="40" width="120" height="60" as="geometry"/>
+      </mxCell>
+    </object>
+    <object id="LIGHT-A" label="ライトA" name="ライトA" type="Light" system="A" voltages="[&quot;24V&quot;]" consumption="30W">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
+        <mxGeometry x="440" y="40" width="120" height="60" as="geometry"/>
+      </mxCell>
+    </object>
+    <object id="HVAC-A" label="空調A" name="空調A" type="HVAC" system="A" voltages="[&quot;24V&quot;]" consumption="150W">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+        <mxGeometry x="440" y="150" width="120" height="60" as="geometry"/>
+      </mxCell>
+    </object>
+    <object id="PSU-B" label="電源装置B" name="電源装置B" type="PowerSupply" system="B" voltages="[&quot;12V&quot;, &quot;24V&quot;]" capacity="500W">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+        <mxGeometry x="40" y="150" width="120" height="60" as="geometry"/>
+      </mxCell>
+    </object>
+    <object id="SW-B" label="スイッチB" name="スイッチB" type="Switch" system="B" voltages="[&quot;12V&quot;]" consumption="5W">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+        <mxGeometry x="240" y="150" width="120" height="60" as="geometry"/>
+      </mxCell>
+    </object>
+    <object id="LIGHT-B" label="ライトB" name="ライトB" type="Light" system="B" voltages="[&quot;24V&quot;]" consumption="30W">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
+        <mxGeometry x="440" y="260" width="120" height="60" as="geometry"/>
+      </mxCell>
+    </object>
+    <object id="HVAC-B" label="空調B" name="空調B" type="HVAC" system="B" voltages="[&quot;24V&quot;]" consumption="150W">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+        <mxGeometry x="440" y="370" width="120" height="60" as="geometry"/>
+      </mxCell>
+    </object>
+    <object id="SPARE-PANEL" label="予備盤" name="予備盤" type="Panel" system="spare" note="relations に未登場">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+        <mxGeometry x="440" y="480" width="120" height="60" as="geometry"/>
+      </mxCell>
+    </object>
     <mxCell id="edge-0" value="12V" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#4A90D9;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="PSU-A" target="SW-A" parent="1">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>

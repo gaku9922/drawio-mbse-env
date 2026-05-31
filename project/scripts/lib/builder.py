@@ -10,6 +10,7 @@ objects / relations から draw.io XML を生成するモジュール。
   - direction: TB のとき rank を段（y）に割り当てる
 """
 
+import json
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
@@ -74,11 +75,24 @@ def _edge_connector_style(color: str, direction: str) -> str:
     )
 
 
-def _tooltip(obj: dict) -> str:
-    """id / name 以外の属性をツールチップ文字列にまとめる。"""
-    skip = {"id", "name"}
-    lines = [f"{k}: {v}" for k, v in obj.items() if k not in skip]
-    return "&#xa;".join(lines)   # draw.io の改行エスケープ
+def _serialize_property(value) -> str:
+    """オブジェクト属性値を draw.io の XML 属性文字列に変換する。"""
+    if isinstance(value, (list, dict)):
+        return json.dumps(value, ensure_ascii=False)
+    return str(value)
+
+
+def _object_element_attrs(obj: dict) -> dict[str, str]:
+    """
+    objects.yaml の全プロパティを <object> 要素の属性 dict に変換する。
+    表示ラベルは draw.io 慣例の label（= name）を使う。
+    """
+    attrs: dict[str, str] = {}
+    for key, value in obj.items():
+        if key == "name":
+            attrs["label"] = _serialize_property(value)
+        attrs[key] = _serialize_property(value)
+    return attrs
 
 
 def _role_sets(object_ids: set[str], from_ids: set[str], to_ids: set[str]) -> tuple[set[str], set[str], set[str]]:
@@ -300,22 +314,21 @@ def build_drawio_xml(
     ET.SubElement(diagram, "mxCell", id="0")
     ET.SubElement(diagram, "mxCell", id="1", parent="0")
 
-    # ノード生成
+    # ノード生成（全プロパティを <object> 属性に内包、表示は label=name のみ）
     for obj in objects:
-        obj_id  = obj["id"]
-        x, y    = coords.get(obj_id, (40, 40))
-        label   = obj['name']
-        style   = _get_style(obj, config)
-        tooltip = _tooltip(obj)
+        obj_id = obj["id"]
+        x, y   = coords.get(obj_id, (40, 40))
+        style  = _get_style(obj, config)
 
+        user_object = ET.SubElement(
+            diagram, "object",
+            **_object_element_attrs(obj),
+        )
         cell = ET.SubElement(
-            diagram, "mxCell",
-            id=obj_id,
-            value=label,
+            user_object, "mxCell",
             style=style,
             vertex="1",
             parent="1",
-            tooltip=tooltip,
         )
         ET.SubElement(
             cell, "mxGeometry",
