@@ -3,12 +3,13 @@ validator.py
 objects / relations の整合性を検証するモジュール。
 
 検証内容：
+  [ERROR] objects.yaml 内で同一 id が重複定義されている
   [ERROR] from / to に指定されたIDが objects.yaml に存在しない
   [ERROR] リレーションに閉路（サイクル）がある
   [WARN]  attributes に edge_color_key に対応する値がない
 """
 
-from collections import defaultdict
+from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 
 
@@ -88,6 +89,16 @@ def _find_cycle_nodes(relations: list) -> list[str] | None:
     return None
 
 
+def _validate_duplicate_ids(objects: list, result: ValidationResult) -> None:
+    """同一 id の重複定義を検出する。"""
+    counts = Counter(o["id"] for o in objects)
+    for obj_id, count in sorted(counts.items()):
+        if count > 1:
+            result.errors.append(
+                f"[ERROR] 重複ID: '{obj_id}' ({count}回定義)"
+            )
+
+
 def _validate_cycles(relations: list, result: ValidationResult) -> None:
     """閉路検出。検出時は ERROR を追加する。"""
     cycle = _find_cycle_nodes(relations)
@@ -114,6 +125,9 @@ def validate(
     result = ValidationResult()
     valid_relations = []
 
+    # ① 重複 id 検出
+    _validate_duplicate_ids(objects, result)
+
     # objects のIDセットを構築
     object_ids = {o["id"] for o in objects}
 
@@ -126,14 +140,14 @@ def validate(
         attributes = r.get("attributes", {})
         skip = False
 
-        # ① from ID の存在確認
+        # ② from ID の存在確認
         if from_id not in object_ids:
             result.errors.append(
                 f"[ERROR] [SKIP] 未定義ID: '{from_id}' (from: {from_id} → to: {to_id})"
             )
             skip = True
 
-        # ② to ID の存在確認
+        # ③ to ID の存在確認
         if to_id not in object_ids:
             result.errors.append(
                 f"[ERROR] [SKIP] 未定義ID: '{to_id}' (from: {from_id} → to: {to_id})"
@@ -143,7 +157,7 @@ def validate(
         if skip:
             continue
 
-        # ③ edge_color_key に対応する属性が存在するか（警告のみ・スキップしない）
+        # ④ edge_color_key に対応する属性が存在するか（警告のみ・スキップしない）
         if edge_color_key and edge_color_key not in attributes:
             result.warnings.append(
                 f"[WARN]  '{edge_color_key}' が attributes に未定義: "
@@ -152,7 +166,7 @@ def validate(
 
         valid_relations.append(r)
 
-    # ④ 閉路検出（有効なリレーションのみ対象）
+    # ⑤ 閉路検出（有効なリレーションのみ対象）
     _validate_cycles(valid_relations, result)
 
     return result, valid_relations

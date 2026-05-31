@@ -57,6 +57,10 @@ def main():
     report_path.write_text(result.summary(), encoding="utf-8")
     print(f"\n検証レポート → {report_path}")
 
+    if result.has_errors:
+        print("\n[!] エラーがあります。図は生成しません。report.txt を確認してください。")
+        sys.exit(1)
+
     # ── XML 生成 ──────────────────────────
     xml_str = build_drawio_xml(objects, valid_relations, config)
 
@@ -67,10 +71,6 @@ def main():
     print()
     print(f"  ノード  : {len(objects)}個")
     print(f"  矢印    : {len(valid_relations)}本（スキップ: {skipped}本）")
-
-    if result.has_errors:
-        print("\n[!] エラーがあります。report.txt を確認してください。")
-        sys.exit(1)
 
 
 if __name__ == "__main__":
