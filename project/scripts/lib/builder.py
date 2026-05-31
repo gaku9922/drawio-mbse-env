@@ -304,7 +304,7 @@ def build_drawio_xml(
     for obj in objects:
         obj_id  = obj["id"]
         x, y    = coords.get(obj_id, (40, 40))
-        label   = f"{obj_id}\n{obj['name']}"
+        label   = obj['name']
         style   = _get_style(obj, config)
         tooltip = _tooltip(obj)
 
